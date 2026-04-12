@@ -47,8 +47,8 @@ jobs:
               echo "${TARGET_PATH} already exists; skipping."
               continue
             fi
-            python3 binary-provider/${SUBDIR}.py "${USERNAME}" "${TARGET_PATH}"
             mkdir -p "q3/${SUBDIR}"
+            python3 binary-provider/${SUBDIR}.py "${USERNAME}" "${TARGET_PATH}"
             chmod +x "${TARGET_PATH}"
             git add "${TARGET_PATH}"
           done
