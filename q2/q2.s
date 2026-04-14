@@ -7,7 +7,9 @@
 
 .section .rodata
 fmt:
-	.string "%d "
+	.string "%d"
+fmt_sp:
+	.string " %d"
 newline:
 	.string "\n"
 
@@ -100,9 +102,7 @@ set_result:
 	je push_stack                   # stack empty → no NGE, leave res[i] = -1
 
 	mov (%r10,%r9,4), %eax          # eax = index of the NGE element
-	# FIX: was storing the index.  Must store the actual VALUE.
-	mov (%r15,%rax,4), %eax         # eax = arr[index]  = the NGE value
-	mov %eax, (%rbx,%r8,4)          # res[i] = NGE value
+	mov %eax, (%rbx,%r8,4)          # res[i] = NGE index
 
 push_stack:
 	inc %r9
@@ -112,10 +112,22 @@ push_stack:
 
 print_ans:
 	xor %r8, %r8
+	cmp $0, %r14
+	je done
+
+	# print first element without leading/trailing spaces
+	lea fmt(%rip), %rdi
+	mov (%rbx,%r8,4), %esi
+	xor %eax, %eax
+	push %r8
+	call printf
+	pop %r8
+	inc %r8
+
 print_loop:
 	cmp %r14, %r8
 	jge done
-	lea fmt(%rip), %rdi
+	lea fmt_sp(%rip), %rdi
 	mov (%rbx,%r8,4), %esi
 	xor %eax, %eax
 	# FIX: save r8 around printf (variadic; clobbers caller-saved regs including r8).
